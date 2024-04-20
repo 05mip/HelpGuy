@@ -9,7 +9,6 @@ class State(rx.State):
         self.message = message
 
 
-
 def action_bar() -> rx.Component:
     return rx.hstack(
         rx.input(
@@ -19,7 +18,6 @@ def action_bar() -> rx.Component:
         ),
         rx.button(
             "Ask",
-            # "Fancy Button",
             rx.icon(tag = "heart"),
             class_name = "transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none ...",
 
@@ -32,7 +30,6 @@ def action_bar() -> rx.Component:
             _hover = {
                 "opacity": 0.5,
             },
-            # style=style.button_style,
         ),
         justify = 'center'
     )
@@ -41,47 +38,43 @@ def action_bar() -> rx.Component:
 def index() -> rx.Component:
 
     return rx.flex(rx.stack(
-
-
-    rx.box(rx.text('Your Chat Bot',
-                   class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
-           text_align='center',
-           font_weight='bold',
-
-           ),
-
+        rx.box(
+            rx.text('Your Chat Bot',
+                    class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
+                    text_align='center',
+                    font_weight='bold',
+                    ),
             action_bar(),
-        direction = 'column',
+            direction = 'column',
             align = 'center',
-        justify = 'center',
-        padding_top = "4em"
-        #    style=style.stack
+            justify = 'center',
+            padding_top = "4em"
         ),
         rx.vstack(
             rx.hstack(
-                rx.box(rx.text('Welcome! Enter your health information above', color='white'),  border_radius="9px",
-        width="30%",
-        margin="4px",
-        padding="30px", background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))", class_name = 'animate-bounce', ),
-                rx.box(rx.image(src = "/dino.png", width = "300px", height = "auto"),
-                  ), align = 'center'),
-             align = 'end', justify = 'end', padding_top = "18em"
-        ),
-        direction = 'column',
-        background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
-
-
+                rx.box(rx.text('Welcome! Enter your health information above', 
+                               color='white'),  
+                        border_radius="9px",
+                        width="30%",
+                        margin="4px",
+                        padding="30px", 
+                        background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))", 
+                        class_name = 'animate-bounce', 
+                        ),
+                rx.box(rx.image(src = "/dino.png", 
+                                width = "300px", 
+                                height = "auto"),
+                        ), 
+                align = 'center'),
+                align = 'end', 
+                justify = 'end', 
+                padding_top = "18em"
+            ),
+            direction = 'column',
+            background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
+            height="100vh",
+            background_size = "cover",
     )
-
-
-#     return rx.center(rx.vstack(
-# rx.box(
-#         rx.center(rx.text('Your Chat Bot'), border_width=),
-#
-#         ),
-#         action_bar()
-#     ))
-
 
 app = rx.App()
 app.add_page(index)
