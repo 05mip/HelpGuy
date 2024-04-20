@@ -1,26 +1,31 @@
-"""Welcome to Reflex! This file outlines the steps to create a basic app."""
 import reflex as rx
-
 from HelpGuy import style
+import Agents as a
 
 class State(rx.State):
-    message = ''
-    def assign_message(self, message):
-        self.message = message
+    user_prompt = ''
+    response = ''
+
+    def ask_prompt(self):
+        self.response = a.begin_prompt(self.user_prompt)
+
+
+    def set_prompt(self, prompt):
+        self.user_prompt = prompt
+
 
 
 def action_bar() -> rx.Component:
     return rx.hstack(
         rx.input(
             placeholder="Ask a question",
-
             style=style.input_style,
+            on_blur=lambda p: State.set_prompt(p)
         ),
         rx.button(
             "Ask",
             rx.icon(tag = "heart"),
             class_name = "transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none ...",
-
             border_radius = "1em",
             box_shadow = "rgba(151, 65, 252, 0.8) 0 15px 30px -10px",
             background_image = "linear-gradient(144deg,#AF40FF,#5B42F3 50%,#00DDEB)",
@@ -30,6 +35,7 @@ def action_bar() -> rx.Component:
             _hover = {
                 "opacity": 0.5,
             },
+            on_click=State.ask_prompt
         ),
         justify = 'center'
     )
@@ -50,6 +56,9 @@ def index() -> rx.Component:
             justify = 'center',
             padding_top = "4em"
         ),
+
+        rx.text(State.response),
+
         rx.vstack(
             rx.hstack(
                 rx.box(rx.text('Welcome! Enter your health information above', 

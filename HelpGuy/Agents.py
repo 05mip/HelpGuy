@@ -26,9 +26,9 @@ You are simply acting as a tool and your only job is to create approprate querie
 Here is your prompt:
 
 """
-user_prompt = "I am vomiting and I am sad"
+user_prompt = ""
+help_guy_response = ""
 
-#exclude results with these domains
 excluded_domains = ('https://www.google.', 
                       'https://google.', 
                       'https://webcache.googleusercontent.', 
@@ -50,7 +50,6 @@ class Message(Model):
 llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_API_KEY)
 
 template = "{text}"
-
 
 prompt = PromptTemplate.from_template(template)
 llm_chain = LLMChain(llm=llm, prompt=prompt)
@@ -111,6 +110,7 @@ async def message_handler(ctx: Context, sender: str, search_queries: Message):
 
 @green_mm.on_message(model=Message)
 async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
+    global help_guy_response
     ctx.logger.info("Loading summary of information found online")
     # This should come up as a text bubble on screen
 
@@ -122,15 +122,22 @@ async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
     docs = docs[:4]
 
     response=stuff_chain.invoke(docs)
-    print(response["output_text"])
+    help_guy_response = response["output_text"]
     #call function to swipe screen & add data
 
 #####################################################
 
-bureau = Bureau()
-bureau.add(yellow_mm)
-bureau.add(red_mm)
-bureau.add(green_mm)
+def begin_prompt(prompt):
+    global user_prompt
+    user_prompt = prompt
 
-if __name__ == "__main__":
+    bureau = Bureau()
+    bureau.add(yellow_mm)
+    bureau.add(red_mm)
+    bureau.add(green_mm)
+
     bureau.run()
+
+    res = help_guy_response
+    help_guy_response = ""
+    return res if res != "" else "Something went wrong"
