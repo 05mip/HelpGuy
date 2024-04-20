@@ -26,7 +26,6 @@ input_style = dict(
 )
 
 stack = dict(
-    #width="100%",
     align_items="center",
     justify_content="center",
     display="flex",
