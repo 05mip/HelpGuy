@@ -2,4 +2,7 @@ import reflex as rx
 
 config = rx.Config(
     app_name="HelpGuy",
+tailwind={"theme": {
+            "extend": {},
+        },},
 )
