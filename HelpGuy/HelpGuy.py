@@ -55,7 +55,6 @@ def index() -> rx.Component:
             direction = 'column',
             align = 'center',
             justify = 'center',
-            padding_top = "4em"
         ),
 
         rx.text(State.response),
