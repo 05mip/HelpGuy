@@ -13,7 +13,7 @@ class State(rx.State):
 
 
 class TextfieldBlur(rx.State):
-    text: str = "Hello World!"
+    text: str = ""
 
 
 def blur_example() -> rx.Component:
@@ -22,16 +22,16 @@ def blur_example() -> rx.Component:
             placeholder="Search here...",
             on_blur=TextfieldBlur.set_text,
             width="50vw",
+            height="5vh",
         ),
-        background_shadow="0 0 10px rgba(0, 0, 0, 0.1)",
     )
 
 
 def search_button() -> rx.Component:
-    return rx.vstack(
-        rx.center(rx.button(("Search"),
-                            )),
-
+    return rx.button(
+        ("\u2315"),
+        height="5vh",
+        font_size="30px"
     )
 
 
@@ -39,7 +39,8 @@ def dino() -> rx.Component:
     return rx.image(
         src="https://media.discordapp.net/attachments/1230238647618371665/1231229218784936057/dino_cliff_2.png?ex=66363290&is=6623bd90&hm=c455234ce0fe0ad820225cfe17fbd7ffe50826af25a31f262b555b5999bc716b&=&format=webp&quality=lossless&width=978&height=978",
         width="20vw",
-        height="auto",)
+        height="auto",
+    )
 
 
 def index() -> rx.Component:
@@ -53,6 +54,7 @@ def index() -> rx.Component:
         align="center",
         height="100vh",
         background_image="url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
+        background_size="cover",
     )
 
 
