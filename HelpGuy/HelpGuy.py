@@ -37,7 +37,8 @@ def action_bar() -> rx.Component:
             },
             on_click=State.ask_prompt
         ),
-        justify = 'center'
+        justify = "center",
+        align="end"
     )
 
 
@@ -77,8 +78,8 @@ def index() -> rx.Component:
                 align = 'center'),
                 align = 'end', 
                 justify = 'end', 
-                padding_top = "18em"
             ),
+            justify="end"
             direction = 'column',
             background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
             height="100vh",
