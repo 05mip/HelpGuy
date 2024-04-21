@@ -10,6 +10,11 @@ from HelpGuy import style
 ENDPOINT_LINK_PRE = "http://127.0.0.1:5000/search?q="
 
 
+
+recovery_data = [
+ 
+    {"name": "Recovery Time", "uv": 4000, "pv": 2400, "amt": 2400},
+]
 data = [
     {"name": "Page A", "uv": 4000, "pv": 2400, "amt": 2400},
     {"name": "Page B", "uv": 3000, "pv": 1398, "amt": 2210},
@@ -21,9 +26,9 @@ data = [
 ]
 
 data01 = [
-    {"name": "Group A", "value": 400},
-    {"name": "Group B", "value": 300},
-    {"name": "Group C", "value": 300},
+    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 400},
+    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 300},
+    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 300},
     {"name": "Group D", "value": 200},
     {"name": "Group E", "value": 278},
     {"name": "Group F", "value": 189},
@@ -51,13 +56,17 @@ class State(rx.State):
     treatments = []
     summary = ''
 
-    def process_output(self):
+    async def process_output(self):
         """Get the output from the prompt."""
-        correctOutputState.is_correct = False
-        correctOutputState.button_click = False
+        outputState = await self.get_state(correctOutputState)
+        outputState.is_correct = False
+        outputState.button_click = False
         if self.prompt == "":
-            return rx.window_alert("Prompt Empty")
-        self.processing = True        
+            yield rx.window_alert("Prompt Empty")
+        self.processing = True
+        yield
+        print(f'{self.processing} should set processing here')
+
         time.sleep(2)
 
         self.response = self.get_endpoint()
@@ -68,6 +77,7 @@ class State(rx.State):
         self.data_filter()
 
         self.complete = True
+        self.processing = False
         if self.complete:
             print("should change to another page")
             return rx.redirect("/results")
@@ -147,7 +157,7 @@ def action_bar() -> rx.Component:
         align="end"
     )
 
-
+@rx.page(on_load=State.reset_state)
 def index() -> rx.Component:
 
     return rx.flex(
@@ -200,6 +210,32 @@ def index() -> rx.Component:
             
             background_size = "cover",
         )
+
+def bar_chart() -> rx.Component:
+    return rx.recharts.bar_chart(
+    rx.recharts.bar(
+        data_key="uv", stroke="#8884d8", fill="#8884d8"
+    ),
+    rx.recharts.x_axis(data_key="name"),
+    rx.recharts.y_axis(),
+    height ="70%",
+    width="70%",
+    max_bar_size=12,
+    data=recovery_data,
+)
+
+def bar_chart() -> rx.Component:
+    return rx.recharts.bar_chart(
+    rx.recharts.bar(
+        data_key="uv", stroke="#8884d8", fill="#8884d8"
+    ),
+    rx.recharts.x_axis(data_key="name"),
+    rx.recharts.y_axis(),
+    height ="70%",
+    width="70%",
+    max_bar_size=12,
+    data=recovery_data,
+)
 
 def line_chart() -> rx.Component:
     return rx.recharts.line_chart(
@@ -357,13 +393,7 @@ def about() -> rx.Component:
     return (
         rx.flex(rx.vstack(
             rx.hstack(
-            rx.card(scroll_area(), width="60%", height="400px"),
-                    rx.card(rx.heading("Recovery Time",
-                                       font_family="Rajdhani"),
-                            line_chart(),
-                            width="60%",
-                            height="400px"),
-                    rx.vstack(
+                 rx.vstack(
                         rx.card(
                             rx.heading("Probability Metric",
                                        font_family="Rajdhani"),
@@ -377,6 +407,13 @@ def about() -> rx.Component:
                                   width="100%",
                                   height="100px"),
                         width="40%"),
+            
+                    rx.card(rx.heading("Recovery Time",
+                                       font_family="Rajdhani"),
+                            bar_chart(),
+                            width="40%",
+                            height="400px"),
+                   rx.card(scroll_area(), width="60%", height="400px"),
 
                 justify = "between",
                 align = "stretch",
@@ -384,15 +421,16 @@ def about() -> rx.Component:
                 width="100%"
             ),
             rx.hstack(
-                rx.cond((correctOutputState.button_click == False) |
-                        ((correctOutputState.is_correct == True) & (correctOutputState.button_click == True)),
+                rx.cond((~correctOutputState.button_click) |
+                        ((correctOutputState.is_correct) & (correctOutputState.button_click)),
                         rx.card(
                             rx.heading("Treatments", font_family = "Rajdhani"),
-                            scroll_horizontal_area(), width = "70%", height = "200px"),
+                            scroll_horizontal_area(), width = "60%", height = "200px"),
                         ),
 
                 # action_bar(),
-                rx.cond(correctOutputState.button_click == False, rx.box(
+                rx.cond(correctOutputState.button_click == False, 
+                rx.box(
                     rx.text("Does this look accurate?",
                                color = "white"),
                        rx.vstack(
@@ -414,12 +452,13 @@ def about() -> rx.Component:
 
                        border_radius = "9px",
                        width = "20%",
+                       height= "auto",
                        margin = "4px",
                        padding = "30px",
                        align="end",
                        background = "linear-gradient(144deg,#AF40FF,#5B42F3 50%,#00DDEB)",
                        ),),
-                rx.cond((correctOutputState.is_correct == False) & (correctOutputState.button_click == True),
+                rx.cond((~correctOutputState.is_correct) & (correctOutputState.button_click),
                         action_bar()
                         ),
                 rx.box(
