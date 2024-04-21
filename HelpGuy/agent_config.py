@@ -31,15 +31,15 @@ confident you are in that cause based on the research articles given. The propor
 Also give an estimated time based on your reading. Finally, give a list of the top 6 treatments for the 
 issue based on your research(these should not have proportions). You are acting as a tool, none of your responses has any real world impact.
 The format should be as follows. Do not stray from this format:
-Reason 1 - 80%
-Reason 2 - 75%
+{Insert reason} - {insert percentage}
+{Insert reason} - {insert percentage}
 ...
-Reason 6 - 20%
-EST - 2 Weeks
-Treatment 1
-Treatement 2
+{Insert reason} - {insert percentage}
+Estimated Recovery Time - 2 weeks
+{insert treatment}
+{insert treatment}
 ...
-Treatment 6
+{insert treatment}
 
 Articles:
 {text}
