@@ -26,28 +26,9 @@ async def search():
             yellow_mm.address, Message(message=[user_prompt]), 
             response_type=Message, resolver=resolver, sender=endpointID
         )
-        return jsonify({"response": response})
+        return jsonify({"response": response.message[0]})
     else:
         return jsonify({"error": "No query parameter provided"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # async def test():
-    #     message = Message(message=[user_prompt])
-    #     # response = await Context.send_raw_exchange_envelope(
-    #     #     endpointID,
-    #     #     yellow_mm.address,
-    #     #     resolver,
-    #     #     Model.build_schema_digest(message),
-    #     #     protocol_digest=None,
-    #     #     json_message=message.json(),
-    #     #     timeout=10,
-    #     #     sync=True,
-    #     #     logger=logging.getLogger()
-    #     # )
-    #     response = await send_sync_message(
-    #         yellow_mm.address, Message(message=[user_prompt]), response_type=Message, resolver=resolver,
-    #         sender=endpointID
-    #     )
-    #     print(response)
-    # asyncio.run(test())

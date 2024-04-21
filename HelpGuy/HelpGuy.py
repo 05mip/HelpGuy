@@ -1,8 +1,14 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
+import json
 import reflex as rx
 import time
 
+import requests
+
 from HelpGuy import style
+
+ENDPOINT_LINK_PRE = "http://127.0.0.1:5000/search?q="
+
 
 data = [
     {"name": "Page A", "uv": 4000, "pv": 2400, "amt": 2400},
@@ -37,8 +43,13 @@ class State(rx.State):
     """The app state."""
 
     prompt = ""
+    response = ""
     processing = False
     complete = False
+    causes_dict = {}
+    recov_time = ''
+    treatments = []
+    summary = ''
 
     def process_output(self):
         """Get the output from the prompt."""
@@ -46,26 +57,74 @@ class State(rx.State):
         correctOutputState.button_click = False
         if self.prompt == "":
             return rx.window_alert("Prompt Empty")
-        self.processing = True
+        self.processing = True        
         time.sleep(2)
+
+        self.response = self.get_endpoint()
+        print(self.response)
+        if self.response == None:
+            return rx.window_alert("Error Occured Loading Data")
+        
+        self.data_filter()
+
         self.complete = True
         if self.complete:
             print("should change to another page")
             return rx.redirect("/results")
+        
+    def data_filter(self):
+        in_causes = True
+        lines = self.response.split('\n')
+        dash_front = lines[0].strip().startswith('-')
 
-        #self.processing, self.complete = True, False
-        # ai stuff
-        # response = openai_client.images.generate(
-        #     prompt=self.prompt, n=1, size="1024x1024"
-        # )
-        # self.image_url = response.data[0].url
-        # self.processing, self.complete = False, True
+        for line in self.response.split('\n')[:-1]:
+            if "stimate" in line:
+                in_causes = False
+                self.recov_time = line[line.index('-')+1:]
+                continue
+            if in_causes:
+                prop = line.split('-')[-1]
+                cause = '-'.join(line.split('-')[int(dash_front):-1]).strip()
+                self.causes_dict[cause] = prop
+            else:
+                if len(line) < 3 or "ummary" in line:
+                    break
+                self.treatments.append(''.join(line.strip('-')[int(dash_front):]).strip())
+                    
+        self.summary = self.response.split('\n')[-1]
+        
+        print("RESULTS")
+        print(self.causes_dict)
+        print(self.recov_time)
+        print(self.treatments)
+        print(self.summary)
+                
+
+            
+        
+    def set_text(self, new_text):
+        self.prompt = new_text
+
+    def get_endpoint(self):
+        url = ENDPOINT_LINK_PRE + self.prompt
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            jdata = json.loads(response.text)
+            response = jdata['response']
+            return response
+        except:
+            print("UR cooked")
+            return None
+        
 
 def action_bar() -> rx.Component:
     return rx.vstack(
         rx.input(
             placeholder="Ask a question",
-            on_blur=State.set_prompt,
+            value=State.prompt,
+            on_change=State.set_text,
+            on_blur=State.set_text,
             style=style.input_style,
         ),
         rx.button(
@@ -93,44 +152,54 @@ def index() -> rx.Component:
 
     return rx.flex(
         rx.cond(State.processing, rx.text("in progress")),
-        rx.stack(
-    rx.box(
-        rx.text("Your Chat Bot",
-                font_family = "Rajdhani",
-                class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
-                text_align="center",
-                font_weight="bold",
-                ),
-            action_bar(),
-            direction = "column",
-            align = "center",
-            justify = "center",
-        ),
-        rx.vstack(
-        rx.hstack(
-            rx.box(
-                rx.text("Welcome! Enter your health information above",
-                        color="white"),
+            rx.stack(
+                rx.box(
+                    rx.text("Health Help Guy",
+                            font_family = "Rajdhani",
+                            size='9'
+                            ),
+                        text_align="center",
+                        font_weight="bold",
+                        ),
+                        action_bar(),
+                        direction = "column",
+                        align = "center",
+                        justify = "center",
+                    ),
+            rx.vstack(
+                rx.hstack(
+                    rx.box(
+                        rx.text("Welcome! Enter your health information above",
+                                color="white"),
                         border_radius="9px",
                         width="30%",
                         margin="4px",
                         padding="30px",
                         background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
-                        class_name = "animate-bounce",),
-                rx.box(
-                    rx.image(
-                        src = "/dino.png",
-                        width = "300px",
-                        height = "auto"),
+                        class_name = "animate-bounce",
                         ),
-                align = "center"),
+                        rx.box(
+                            rx.image(
+                                src = "/dino.png",
+                                width = "400px",
+                                height = "auto"),
+                                ),
+                    align = "center"
+                ),
+                padding_top = "20vh",
+                width = "100vw",
                 align = "end",
-            justify = "end",),
-            justify = "end",
+                justify = "end",
+            ),
+            padding_top = "25vh",
+            justify = "center",
             direction = "column",
             background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
             height="100vh",
-            background_size = "cover",)
+            width="100vw",
+            
+            background_size = "cover",
+        )
 
 def line_chart() -> rx.Component:
     return rx.recharts.line_chart(

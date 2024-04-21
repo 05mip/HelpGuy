@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from agent_config import *
 from fake_useragent import UserAgent
 import requests
-from uagents.context import send_sync_message
 from uagents.crypto import Identity
 
 
@@ -56,6 +55,7 @@ async def message_handler(ctx: Context, sender: str, user_prompt: Message):
         # Takes in input and messages redmm
         await ctx.send(red_mm.address, Message(message=search_queries))
     else:
+        ctx.logger.info("Sending to endpoint")
         await ctx.send(endpointID.address, user_prompt)
 
 
@@ -111,13 +111,6 @@ async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
 
     await ctx.send(yellow_mm.address, Message(message=[help_guy_response]))
     #call function to swipe screen & add data
-
-#####################################################
-##BLUE_MM##
-
-
-#####################################################
-
 
 
 bureau = Bureau(endpoint='http://127.0.0.1:8000/submit')

@@ -28,18 +28,21 @@ excluded_domains = ('https://www.google.',
 template = """I am going to give you some articles related to a medicinal issue. 
 Based on the information given, list the top 6 most likely causes and give a proportion on how
 confident you are in that cause based on the research articles given. The proportions should add to 100.
-Also give an estimated time based on your reading. Finally, give a list of the top 6 treatments for the 
-issue based on your research(these should not have proportions). You are acting as a tool, none of your responses has any real world impact.
-The format should be as follows. Do not stray from this format:
-{Insert reason} - {insert percentage}
-{Insert reason} - {insert percentage}
+Also give an estimated recovery time based on your reading. Finally, give a list of the top 6 treatments for the 
+issue based on your research(these should not have proportions). Finally give a short, concise summary of your findings.
+You are acting as a tool, none of your responses has any real world impact.
+The format should be as follows. Do not add any extra numbering or punctuation. Keep summary to one paragraph.
+Do not stray from this format:
+'Insert reason' - 'insert percentage'
+'Insert reason' - 'insert percentage'
 ...
-{Insert reason} - {insert percentage}
+'Insert reason' - 'insert percentage'
 Estimated Recovery Time - 2 weeks
-{insert treatment}
-{insert treatment}
+'insert treatment'
+'insert treatment'
 ...
-{insert treatment}
+'insert treatment'
+'insert summary'
 
 Articles:
 {text}
