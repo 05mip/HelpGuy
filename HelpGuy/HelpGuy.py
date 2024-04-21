@@ -89,45 +89,44 @@ def action_bar() -> rx.Component:
     )
 
 
-def index() -> rx.Component:
+# def index() -> rx.Component:
 
-    return rx.flex(
-        rx.cond(State.processing, rx.text("in progress")),
-        rx.stack(
-    rx.box(
-        rx.text("Your Chat Bot",
-                font_family = "Rajdhani",
-                class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
-                text_align="center",
-                font_weight="bold",
-                ),
+    return rx.flex(rx.stack(
+        rx.box(
+            rx.text('Your Chat Bot',
+                    class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
+                    text_align='center',
+                    font_weight='bold',
+                    ),
             action_bar(),
-            direction = "column",
-            align = "center",
-            justify = "center",
+            direction = 'column',
+            align = 'center',
+            justify = 'center',
         ),
+
+        rx.text(State.response),
+
         rx.vstack(
-        rx.hstack(
-            rx.box(
-                rx.text("Welcome! Enter your health information above",
-                        color="white"),
+            rx.hstack(
+                rx.box(rx.text('Welcome! Enter your health information above', 
+                               color='white'),  
                         border_radius="9px",
                         width="30%",
                         margin="4px",
-                        padding="30px",
-                        background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
-                        class_name = "animate-bounce",),
-                rx.box(
-                    rx.image(
-                        src = "/dino.png",
-                        width = "300px",
-                        height = "auto"),
+                        padding="30px", 
+                        background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))", 
+                        class_name = 'animate-bounce', 
                         ),
-                align = "center"),
-                align = "end",
-            justify = "end",),
-            justify = "end",
-            direction = "column",
+                rx.box(rx.image(src = "/dino.png", 
+                                width = "300px", 
+                                height = "auto"),
+                        ), 
+                align = 'center'),
+                align = 'end', 
+                justify = 'end', 
+            ),
+            justify="end"
+            direction = 'column',
             background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
             height="100vh",
             background_size = "cover",)
@@ -383,4 +382,4 @@ stylesheets=[
     ],
 )
 app.add_page(index)
-app.compile()
+
