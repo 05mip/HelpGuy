@@ -8,8 +8,10 @@ from bs4 import BeautifulSoup
 from agent_config import *
 from fake_useragent import UserAgent
 import requests
-import reflex as rx
-from style import *
+from uagents.context import send_sync_message
+from uagents.crypto import Identity
+
+
 
 user_prompt = ""
 help_guy_response = ""
@@ -36,20 +38,26 @@ yellow_mm = Agent(name="yellow_mm", seed="yellow_mm_recovery")
 red_mm = Agent(name="red_mm", seed="red_mm_recovery")
 green_mm = Agent(name="green_mm", seed="green_mm_recovery")
 
+endpointID = Identity.from_seed("endpoint_recovery", 0)
 
-@yellow_mm.on_event("startup")
-async def say_loading(ctx: Context):
-    ctx.logger.info("Processing")
+@yellow_mm.on_message(model=Message)
+async def message_handler(ctx: Context, sender: str, user_prompt: Message):
+    ctx.logger.info("YELLOW")
 
-    #at this point user input string would be set
-    response = llm.invoke(f'{QUERY_CREATE_PROMPT}{user_prompt}').content.strip()
-    search_queries = [line.strip()[4:-1] for line in response.split('\n')]
-    #change to finding at the first quotation
-    print(search_queries)
+    if sender != green_mm.address:
+        ctx.logger.info("Processing")
 
-    # This should come up as a text bubble
-    # Takes in input and messages redmm
-    await ctx.send(red_mm.address, Message(message=search_queries))    
+        response = llm.invoke(f'{QUERY_CREATE_PROMPT}{user_prompt}').content.strip()
+        search_queries = [line.strip()[4:-1] for line in response.split('\n')]
+        #change to finding at the first quotation
+        print(search_queries)
+
+        # This should come up as a text bubble
+        # Takes in input and messages redmm
+        await ctx.send(red_mm.address, Message(message=search_queries))
+    else:
+        await ctx.send(endpointID.address, user_prompt)
+
 
 ###############################################
 ##RED_MM##
@@ -90,7 +98,7 @@ async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
     # This should come up as a text bubble on screen
 
     docs = []
-    for url in urls_to_search.message[:4]:
+    for url in urls_to_search.message[:1]:
         try:
             loader = WebBaseLoader(url, header_template=header_template)
             docs += loader.load()
@@ -100,24 +108,25 @@ async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
     response=stuff_chain.invoke(docs)
     help_guy_response = response["output_text"]
     print(help_guy_response)
-    State.set_response(help_guy_response)
+
+    await ctx.send(yellow_mm.address, Message(message=[help_guy_response]))
     #call function to swipe screen & add data
 
 #####################################################
+##BLUE_MM##
 
-def begin_prompt(prompt):
-    global user_prompt
-    # global State
-    user_prompt = prompt
-    # State = state
 
-    bureau = Bureau()
-    bureau.add(yellow_mm)
-    bureau.add(red_mm)
-    bureau.add(green_mm)
+#####################################################
 
-    bureau.run()
+
+
+bureau = Bureau(endpoint='http://127.0.0.1:8000/submit')
+bureau.add(yellow_mm)
+bureau.add(red_mm)
+bureau.add(green_mm)
 
 
 if __name__ == "__main__":
-    begin_prompt("Im coughing, sneezing and vomiting")
+    bureau.run()
+
+

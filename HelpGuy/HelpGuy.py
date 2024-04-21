@@ -1,13 +1,18 @@
 # import reflex as rx
-# from HelpGuy import style
-# from HelpGuy.Agents import *
+# # from HelpGuy.style import *
+# # from HelpGuy.Agents import *
+# from uagents import Agent, Bureau, Context, Model
+# from bs4 import BeautifulSoup
+# # from HelpGuy.agent_config import *
+# from fake_useragent import UserAgent
+# import requests
 
 # class State(rx.State):
 #     user_prompt = ''
 #     response = ''
 
-#     def ask_prompt(self):
-#         begin_prompt(self.user_prompt, self)
+#     def ask_prompt(self, p):
+#         Middle.set_prompt(p)
 
 #     def set_prompt(self, prompt):
 #         self.user_prompt = prompt
