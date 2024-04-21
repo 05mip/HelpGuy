@@ -9,8 +9,6 @@ from HelpGuy import style
 
 ENDPOINT_LINK_PRE = "http://127.0.0.1:5000/search?q="
 
-
-
 recovery_data = [
  
     {"name": "Recovery Time", "uv": 4000, "pv": 2400, "amt": 2400},
@@ -63,8 +61,9 @@ class State(rx.State):
         outputState.button_click = False
         if self.prompt == "":
             yield rx.window_alert("Prompt Empty")
-        self.processing = True
-        yield
+        else:
+            self.processing = True
+            yield
         print(f'{self.processing} should set processing here')
 
         time.sleep(2)
@@ -80,7 +79,12 @@ class State(rx.State):
         self.processing = False
         if self.complete:
             print("should change to another page")
-            return rx.redirect("/results")
+            yield rx.redirect("/results")
+        
+    def reset_state(self):
+        self.processing = False
+        self.complete = False
+        self.prompt = ''
         
     def data_filter(self):
         in_causes = True
@@ -172,6 +176,7 @@ def index() -> rx.Component:
                         font_weight="bold",
                         ),
                         action_bar(),
+                        rx.cond(State.processing, rx.chakra.circular_progress(is_indeterminate=True),),
                         direction = "column",
                         align = "center",
                         justify = "center",
