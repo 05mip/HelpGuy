@@ -2,35 +2,14 @@
 import json
 import reflex as rx
 import time
-
+import plotly as go
 import requests
 
 from HelpGuy import style
 
 ENDPOINT_LINK_PRE = "http://127.0.0.1:5000/search?q="
 
-recovery_data = [
- 
-    {"name": "Recovery Time", "uv": 4000, "pv": 2400, "amt": 2400},
-]
-data = [
-    {"name": "Page A", "uv": 4000, "pv": 2400, "amt": 2400},
-    {"name": "Page B", "uv": 3000, "pv": 1398, "amt": 2210},
-    {"name": "Page C", "uv": 2000, "pv": 9800, "amt": 2290},
-    {"name": "Page D", "uv": 2780, "pv": 3908, "amt": 2000},
-    {"name": "Page E", "uv": 1890, "pv": 4800, "amt": 2181},
-    {"name": "Page F", "uv": 2390, "pv": 3800, "amt": 2500},
-    {"name": "Page G", "uv": 3490, "pv": 4300, "amt": 2100},
-]
 
-data01 = [
-    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 400},
-    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 300},
-    {"name": "HELLLLOOOOOOOOOOOOOOO", "value": 300},
-    {"name": "Group D", "value": 200},
-    {"name": "Group E", "value": 278},
-    {"name": "Group F", "value": 189},
-]
 class correctOutputState(rx.State):
     is_correct = False
     button_click = False
@@ -53,6 +32,7 @@ class State(rx.State):
     recov_time = ''
     treatments = []
     summary = ''
+    pielist: list[dict]= []
 
     async def process_output(self):
         """Get the output from the prompt."""
@@ -71,9 +51,10 @@ class State(rx.State):
         self.response = self.get_endpoint()
         print(self.response)
         if self.response == None:
-            return rx.window_alert("Error Occured Loading Data")
+            yield rx.window_alert("Error Occured Loading Data")
         
         self.data_filter()
+        self.portion_to_int()
 
         self.complete = True
         self.processing = False
@@ -106,15 +87,21 @@ class State(rx.State):
                 self.treatments.append(''.join(line.strip('-')[int(dash_front):]).strip())
                     
         self.summary = self.response.split('\n')[-1]
+        if len(self.treatments) > 4:
+            self.treatments = self.treatments[:4]
         
         print("RESULTS")
         print(self.causes_dict)
         print(self.recov_time)
         print(self.treatments)
         print(self.summary)
-                
-
-            
+    
+    def portion_to_int(self):
+        for k, v in self.causes_dict.items():
+            if v.strip() == '' or len(v.strip()) < 2:
+                del self.causes_dict[k]
+        self.pielist = sorted([{"name": key, "value": int(value.strip()[:-1])} 
+             for key, value in self.causes_dict.items()], key= lambda x: x['value'])
         
     def set_text(self, new_text):
         self.prompt = new_text
@@ -130,7 +117,13 @@ class State(rx.State):
         except:
             print("UR cooked")
             return None
-        
+#####################################################################        
+recovery_data = [
+    {"name": "Recovery Time", "uv": 4000, "pv": 2400, "amt": 2400},
+]
+
+data01 = State.pielist
+#####################################################################        
 
 def action_bar() -> rx.Component:
     return rx.vstack(
@@ -165,10 +158,10 @@ def action_bar() -> rx.Component:
 def index() -> rx.Component:
 
     return rx.flex(
-        rx.cond(State.processing, rx.text("in progress")),
+        rx.cond(State.processing, rx.text('')),
             rx.stack(
                 rx.box(
-                    rx.text("Health Help Guy",
+                    rx.text("The Dino Doc",
                             font_family = "Rajdhani",
                             size='9'
                             ),
@@ -184,21 +177,21 @@ def index() -> rx.Component:
             rx.vstack(
                 rx.hstack(
                     rx.box(
-                        rx.text("Welcome! Enter your health information above",
+                        rx.text("Hello There! Enter any health related problems you've been having recently",
                                 color="white"),
                         border_radius="9px",
                         width="30%",
                         margin="4px",
                         padding="30px",
-                        background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
+                        background="linear-gradient(45deg, #6bcef8, #4a3aae)",
                         class_name = "animate-bounce",
-                        ),
-                        rx.box(
-                            rx.image(
-                                src = "/dino.png",
-                                width = "400px",
-                                height = "auto"),
-                                ),
+                ),
+                    rx.box(
+                        rx.image(
+                            src = "/dino.png",
+                            width = "400px",
+                            height = "auto"),
+                            ),
                     align = "center"
                 ),
                 padding_top = "20vh",
@@ -215,49 +208,15 @@ def index() -> rx.Component:
             
             background_size = "cover",
         )
+        
 
-def bar_chart() -> rx.Component:
-    return rx.recharts.bar_chart(
-    rx.recharts.bar(
-        data_key="uv", stroke="#8884d8", fill="#8884d8"
-    ),
-    rx.recharts.x_axis(data_key="name"),
-    rx.recharts.y_axis(),
-    height ="70%",
-    width="70%",
-    max_bar_size=12,
-    data=recovery_data,
-)
-
-def bar_chart() -> rx.Component:
-    return rx.recharts.bar_chart(
-    rx.recharts.bar(
-        data_key="uv", stroke="#8884d8", fill="#8884d8"
-    ),
-    rx.recharts.x_axis(data_key="name"),
-    rx.recharts.y_axis(),
-    height ="70%",
-    width="70%",
-    max_bar_size=12,
-    data=recovery_data,
-)
-
-def line_chart() -> rx.Component:
-    return rx.recharts.line_chart(
-        rx.recharts.line(
-            data_key = "pv",
-            stroke = "#7A8FB8",
-        ),
-        rx.recharts.line(
-            datakey = "uv",
-            stroke = "#7A8FB8",
-        ),
-        rx.recharts.x_axis(data_key = "name"),
-        rx.recharts.y_axis(),
-        rx.recharts.cartesian_grid(stroke_dasharray = "3 3"),
-        rx.recharts.graphing_tooltip(),
-        rx.recharts.legend(),
-        data = data, )
+def recovery_time() -> rx.Component:
+    return rx.text(State.recov_time,
+                   size='8',
+                   fond_family="Rajdhani",
+                   padding_top="10vh",
+                   align="center",
+                   justify="center")
 
 def pi_chart() -> rx.Component:
     return rx.recharts.pie_chart(
@@ -269,37 +228,18 @@ def pi_chart() -> rx.Component:
             cy="50%",
             fill="#7A8FB8",
             label=True,
-
     ),
         rx.recharts.legend(),
         height ="90%",
-        width="90%"
+        width="90%",
+        padding_top="1vh"
     )
 
 def scroll_area() -> rx.Component:
     return rx.scroll_area(
         rx.flex(
-            rx.heading("Symptoms",  font_family="Rajdhani"),
-                        rx.text(
-                """Three fundamental aspects of typography are legibility, readability, and
-            aesthetics. Although in a non-technical sense “legible” and “readable”
-            are often used synonymously, typographically they are separate but
-            related concepts.""",
-            ),
-            rx.text(
-                """Legibility describes how easily individual characters can be
-            distinguished from one another. It is described by Walter Tracy as “the
-            quality of being decipherable and recognisable”. For instance, if a “b”
-            and an “h”, or a “3” and an “8”, are difficult to distinguish at small
-            sizes, this is a problem of legibility.""",
-            ),
-            rx.text(
-                """Typographers are concerned with legibility insofar as it is their job to
-            select the correct font to use. Brush Script is an example of a font
-            containing many characters that might be difficult to distinguish. The
-            selection of cases influences the legibility of typography because using
-            only uppercase letters (all-caps) reduces legibility.""",
-            ),
+            rx.heading("Summary",  font_family="Rajdhani"),
+                        rx.text(State.summary),
             direction = "column",
             spacing = "4",
         ),
@@ -307,94 +247,23 @@ def scroll_area() -> rx.Component:
         scrollbars = "vertical",
     )
 
+
+
 def scroll_horizontal_area() -> rx.Component:
     return rx.grid(
-        rx.scroll_area(
-            rx.flex(
-                rx.text("first treatment",  font_family="Rajdhani", weight = "bold"),
-                rx.text(
-                    """Legibility describes how easily individual characters can be
-            distinguished from one another. It is described by Walter Tracy as "the
-            quality of being decipherable and recognisable". For instance, if a "b"
-            and an "h", or a "3" and an "8", are difficult to distinguish at small
-            sizes, this is a problem of legibility.""",
-                    size = "2",
-                    trim = "both",
-                ),
-                padding = "8px",
-                direction = "column",
-                spacing = "4",
-            ),
-            type = "auto",
-            scrollbars = "vertical",
-            style = {"height": 200},
+
+        rx.foreach(
+            rx.Var.range(State.treatments.length()),
+            lambda i: rx.flex(rx.text(State.treatments[i])),
+            
         ),
-        rx.scroll_area(
-            rx.flex(
-                rx.text("second treatment",  font_family="Rajdhani", weight = "bold"),
-                rx.text(
-                    """Legibility describes how easily individual characters can be
-            distinguished from one another. It is described by Walter Tracy as "the
-            quality of being decipherable and recognisable". For instance, if a "b"
-            and an "h", or a "3" and an "8", are difficult to distinguish at small
-            sizes, this is a problem of legibility.""",
-                    size = "2",
-                    trim = "both",
-                ),
-                padding = "8px",
-                direction = "column",
-                spacing = "4",
-            ),
-            type = "always",
-            scrollbars = "vertical",
-            style = {"height": 200},
-        ),
-        rx.scroll_area(
-            rx.flex(
-                rx.text("third treatment",  font_family="Rajdhani", weight = "bold"),
-                rx.text(
-                    """Legibility describes how easily individual characters can be
-            distinguished from one another. It is described by Walter Tracy as "the
-            quality of being decipherable and recognisable". For instance, if a "b"
-            and an "h", or a "3" and an "8", are difficult to distinguish at small
-            sizes, this is a problem of legibility.""",
-                    size = "2",
-                    trim = "both",
-                ),
-                padding = "8px",
-                direction = "column",
-                spacing = "4",
-            ),
-            type = "scroll",
-            scrollbars = "vertical",
-            style = {"height": 200},
-        ),
-        rx.scroll_area(
-            rx.flex(
-                rx.text("fourth treatment",  font_family="Rajdhani", weight = "bold"),
-                rx.text(
-                    """Legibility describes how easily individual characters can be
-            distinguished from one another. It is described by Walter Tracy as "the
-            quality of being decipherable and recognisable". For instance, if a "b"
-            and an "h", or a "3" and an "8", are difficult to distinguish at small
-            sizes, this is a problem of legibility.""",
-                    size = "2",
-                    trim = "both",
-                ),
-                padding = "8px",
-                direction = "column",
-                spacing = "4",
-            ),
-            type = "hover",
-            scrollbars = "vertical",
-            style = {"height": 200},
-        ),
-        columns = "4",
-        spacing = "2",
+        columns=f'{State.treatments.length()}',
+        spacing="2"
     )
+
+
 @rx.page(route="/results", title="Results Page")
 def about() -> rx.Component:
-
     return (
         rx.flex(rx.vstack(
             rx.hstack(
@@ -408,14 +277,14 @@ def about() -> rx.Component:
                               rx.card(
                                   rx.heading("Most Likely Match:",
                                              font_family="Rajdhani"),
-                                  rx.text("Nosebleeds"),
+                                  rx.text(State.pielist[0]["name"]),
                                   width="100%",
                                   height="100px"),
                         width="40%"),
             
                     rx.card(rx.heading("Recovery Time",
                                        font_family="Rajdhani"),
-                            bar_chart(),
+                            recovery_time(),
                             width="40%",
                             height="400px"),
                    rx.card(scroll_area(), width="60%", height="400px"),
@@ -423,7 +292,7 @@ def about() -> rx.Component:
                 justify = "between",
                 align = "stretch",
                 spacing = "4",
-                width="100%"
+                width="100%",
             ),
             rx.hstack(
                 rx.cond((~correctOutputState.button_click) |
@@ -461,7 +330,7 @@ def about() -> rx.Component:
                        margin = "4px",
                        padding = "30px",
                        align="end",
-                       background = "linear-gradient(144deg,#AF40FF,#5B42F3 50%,#00DDEB)",
+                       background = "linear-gradient(144deg,#AF40FF,#6bcef8 50%,#00DDEB)",
                        ),),
                 rx.cond((~correctOutputState.is_correct) & (correctOutputState.button_click),
                         action_bar()

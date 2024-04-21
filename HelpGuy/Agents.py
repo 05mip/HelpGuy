@@ -98,7 +98,7 @@ async def message_handler(ctx: Context, sender: str, urls_to_search: Message):
     # This should come up as a text bubble on screen
 
     docs = []
-    for url in urls_to_search.message[:1]:
+    for url in urls_to_search.message[:4]:
         try:
             loader = WebBaseLoader(url, header_template=header_template)
             docs += loader.load()
