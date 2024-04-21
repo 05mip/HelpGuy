@@ -14,7 +14,12 @@ message_style = dict(
 )
 
 
+dino_style = dict(
+    position="absolute",
+    bottom="0px",
+    right="0px"
 
+)
 # Styles for the action bar.
 input_style = dict(
    border_width="2px",
