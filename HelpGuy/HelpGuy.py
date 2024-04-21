@@ -39,6 +39,12 @@ class State(rx.State):
         outputState = await self.get_state(correctOutputState)
         outputState.is_correct = False
         outputState.button_click = False
+        self.causes_dict = {}
+        self.recov_time = ''
+        self.treatments = []
+        self.summary = ''
+        self.pielist: list[dict]= []
+        
         if self.prompt == "":
             yield rx.window_alert("Prompt Empty")
         else:
