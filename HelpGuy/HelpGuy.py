@@ -22,8 +22,17 @@ data01 = [
     {"name": "Group E", "value": 278},
     {"name": "Group F", "value": 189},
 ]
-class TextfieldControlled(rx.State):
-    text: str = ""
+class correctOutputState(rx.State):
+    is_correct = False
+    button_click = False
+
+    def set_correct(self):
+        self.button_click = True
+        self.is_correct = True
+    def set_need_to_check(self):
+        self.button_click = True
+        self.is_correct = False
+
 class State(rx.State):
     """The app state."""
 
@@ -33,6 +42,8 @@ class State(rx.State):
 
     def process_output(self):
         """Get the output from the prompt."""
+        correctOutputState.is_correct = False
+        correctOutputState.button_click = False
         if self.prompt == "":
             return rx.window_alert("Prompt Empty")
         self.processing = True
@@ -304,20 +315,27 @@ def about() -> rx.Component:
                 width="100%"
             ),
             rx.hstack(
-                rx.card(
-                    rx.heading("Treatments", font_family="Rajdhani"),
-                    scroll_horizontal_area(), width="70%", height="200px"),
+                rx.cond((correctOutputState.button_click == False) |
+                        ((correctOutputState.is_correct == True) & (correctOutputState.button_click == True)),
+                        rx.card(
+                            rx.heading("Treatments", font_family = "Rajdhani"),
+                            scroll_horizontal_area(), width = "70%", height = "200px"),
+                        ),
+
                 # action_bar(),
-                rx.box(
+                rx.cond(correctOutputState.button_click == False, rx.box(
                     rx.text("Does this look accurate?",
                                color = "white"),
                        rx.vstack(
                            rx.hstack(
                                rx.button(
                                    rx.icon(tag = "check"),
+                                   on_click = correctOutputState.set_correct,
+
                                ),
                                rx.button(
                                    rx.icon(tag = "x"),
+                                   on_click = correctOutputState.set_need_to_check,
                                ),
                                spacing = "2",
                                justify = "end",
@@ -330,8 +348,11 @@ def about() -> rx.Component:
                        margin = "4px",
                        padding = "30px",
                        align="end",
-                       background = "linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
-                       ),
+                       background = "linear-gradient(144deg,#AF40FF,#5B42F3 50%,#00DDEB)",
+                       ),),
+                rx.cond((correctOutputState.is_correct == False) & (correctOutputState.button_click == True),
+                        action_bar()
+                        ),
                 rx.box(
                     rx.image(src = "/dino.png",
                             width = "300px",
@@ -342,7 +363,7 @@ def about() -> rx.Component:
                 width = "100%"
             ),
 
-            bg = "lightblue",
+            bg = "linear-gradient(#048C7F, #8A9EBE)",
             width="100%",
             height="100vh",
             display="flex",
