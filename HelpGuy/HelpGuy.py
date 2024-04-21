@@ -40,7 +40,7 @@ class State(rx.State):
         self.complete = True
         if self.complete:
             print("should change to another page")
-            return rx.redirect('/results')
+            return rx.redirect("/results")
 
         #self.processing, self.complete = True, False
         # ai stuff
@@ -71,7 +71,6 @@ def action_bar() -> rx.Component:
             _hover = {
                 "opacity": 0.5,
             },
-            # on_click = rx.redirect('/results')
            on_click = State.process_output
         ),
         justify = "center",
@@ -82,50 +81,45 @@ def action_bar() -> rx.Component:
 def index() -> rx.Component:
 
     return rx.flex(
-
-        rx.cond(State.processing, rx.text('in progress')),
-
-    rx.stack(
+        rx.cond(State.processing, rx.text("in progress")),
+        rx.stack(
     rx.box(
-        rx.text('Your Chat Bot',
+        rx.text("Your Chat Bot",
                 font_family = "Rajdhani",
                 class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
-                text_align='center',
-                font_weight='bold',
+                text_align="center",
+                font_weight="bold",
                 ),
             action_bar(),
-            direction = 'column',
-            align = 'center',
-            justify = 'center',
-),
-
-
-
+            direction = "column",
+            align = "center",
+            justify = "center",
+        ),
         rx.vstack(
-            rx.hstack(
-                rx.box(rx.text('Welcome! Enter your health information above',
-                               color='white'),
+        rx.hstack(
+            rx.box(
+                rx.text("Welcome! Enter your health information above",
+                        color="white"),
                         border_radius="9px",
                         width="30%",
                         margin="4px",
                         padding="30px",
                         background="linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
-                        class_name = 'animate-bounce',
-                        ),
-                rx.box(rx.image(src = "/dino.png",
-                                width = "300px",
-                                height = "auto"),
+                        class_name = "animate-bounce",),
+                rx.box(
+                    rx.image(
+                        src = "/dino.png",
+                        width = "300px",
+                        height = "auto"),
                         ),
                 align = "center"),
-                align = 'end',
-                justify = 'end',
-            ),
-            justify = 'end',
-            direction = 'column',
+                align = "end",
+            justify = "end",),
+            justify = "end",
+            direction = "column",
             background_image = "url('https://media.discordapp.net/attachments/1230238647618371665/1231197092656185415/image.png?ex=663614a5&is=66239fa5&hm=5217e91f091d2ab13c5e6d6a723dec685b9215c07f2f517f1fef9bea318b5952&=&format=webp&quality=lossless&width=1554&height=978')",
             height="100vh",
-            background_size = "cover",
-    )
+            background_size = "cover",)
 
 def line_chart() -> rx.Component:
     return rx.recharts.line_chart(
@@ -284,9 +278,25 @@ def about() -> rx.Component:
         rx.flex(rx.vstack(
             rx.hstack(
             rx.card(scroll_area(), width="60%", height="400px"),
-                    rx.card(rx.heading('Recovery Time',  font_family="Rajdhani"), line_chart(), width="60%", height="400px"),
-                    rx.vstack(rx.card(rx.heading('Probability Metric',  font_family="Rajdhani"), pi_chart(), width="100%", height="300px"),
-                              rx.card(rx.heading('Most Likely Match:',  font_family="Rajdhani"), rx.text("Nosebleeds"), width="100%", height="100px"), width="40%"),
+                    rx.card(rx.heading("Recovery Time",
+                                       font_family="Rajdhani"),
+                            line_chart(),
+                            width="60%",
+                            height="400px"),
+                    rx.vstack(
+                        rx.card(
+                            rx.heading("Probability Metric",
+                                       font_family="Rajdhani"),
+                            pi_chart(),
+                            width="100%",
+                            height="300px"),
+                              rx.card(
+                                  rx.heading("Most Likely Match:",
+                                             font_family="Rajdhani"),
+                                  rx.text("Nosebleeds"),
+                                  width="100%",
+                                  height="100px"),
+                        width="40%"),
 
                 justify = "between",
                 align = "stretch",
@@ -294,15 +304,17 @@ def about() -> rx.Component:
                 width="100%"
             ),
             rx.hstack(
-                rx.card(rx.heading('Treatments', font_family="Rajdhani"), scroll_horizontal_area(), width="70%", height="200px"),
+                rx.card(
+                    rx.heading("Treatments", font_family="Rajdhani"),
+                    scroll_horizontal_area(), width="70%", height="200px"),
                 # action_bar(),
-                rx.box(rx.text('Does this look accurate?',
-                               color = 'white'),
+                rx.box(
+                    rx.text("Does this look accurate?",
+                               color = "white"),
                        rx.vstack(
                            rx.hstack(
                                rx.button(
                                    rx.icon(tag = "check"),
-
                                ),
                                rx.button(
                                    rx.icon(tag = "x"),
@@ -319,20 +331,16 @@ def about() -> rx.Component:
                        padding = "30px",
                        align="end",
                        background = "linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
-
                        ),
-                rx.box(rx.image(src = "/dino.png",
-                                width = "300px",
-                                height = "auto"),
-                       #align = "center",
-                       # width = "100%"
+                rx.box(
+                    rx.image(src = "/dino.png",
+                            width = "300px",
+                            height = "auto"),
                        style = style.dino_style
                        ),
-
                 align = "stretch",
                 width = "100%"
             ),
-
 
             bg = "lightblue",
             width="100%",
