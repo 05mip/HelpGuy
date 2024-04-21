@@ -4,10 +4,23 @@ import time
 
 from HelpGuy import style
 
-data =[
+data = [
     {"name": "Page A", "uv": 4000, "pv": 2400, "amt": 2400},
     {"name": "Page B", "uv": 3000, "pv": 1398, "amt": 2210},
     {"name": "Page C", "uv": 2000, "pv": 9800, "amt": 2290},
+    {"name": "Page D", "uv": 2780, "pv": 3908, "amt": 2000},
+    {"name": "Page E", "uv": 1890, "pv": 4800, "amt": 2181},
+    {"name": "Page F", "uv": 2390, "pv": 3800, "amt": 2500},
+    {"name": "Page G", "uv": 3490, "pv": 4300, "amt": 2100},
+]
+
+data01 = [
+    {"name": "Group A", "value": 400},
+    {"name": "Group B", "value": 300},
+    {"name": "Group C", "value": 300},
+    {"name": "Group D", "value": 200},
+    {"name": "Group E", "value": 278},
+    {"name": "Group F", "value": 189},
 ]
 class TextfieldControlled(rx.State):
     text: str = ""
@@ -75,6 +88,7 @@ def index() -> rx.Component:
     rx.stack(
     rx.box(
         rx.text('Your Chat Bot',
+                font_family = "Rajdhani",
                 class_name=" overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-black font-bold",),
                 text_align='center',
                 font_weight='bold',
@@ -112,55 +126,232 @@ def index() -> rx.Component:
             height="100vh",
             background_size = "cover",
     )
+
+def line_chart() -> rx.Component:
+    return rx.recharts.line_chart(
+        rx.recharts.line(
+            data_key = "pv",
+            stroke = "#7A8FB8",
+        ),
+        rx.recharts.line(
+            datakey = "uv",
+            stroke = "#7A8FB8",
+        ),
+        rx.recharts.x_axis(data_key = "name"),
+        rx.recharts.y_axis(),
+        rx.recharts.cartesian_grid(stroke_dasharray = "3 3"),
+        rx.recharts.graphing_tooltip(),
+        rx.recharts.legend(),
+        data = data, )
+
+def pi_chart() -> rx.Component:
+    return rx.recharts.pie_chart(
+        rx.recharts.pie(
+            data=data01,
+            data_key="value",
+            name_key="name",
+            cx="50%",
+            cy="50%",
+            fill="#7A8FB8",
+            label=True,
+
+    ),
+        rx.recharts.legend(),
+        height ="90%",
+        width="90%"
+    )
+
+def scroll_area() -> rx.Component:
+    return rx.scroll_area(
+        rx.flex(
+            rx.heading("Symptoms",  font_family="Rajdhani"),
+                        rx.text(
+                """Three fundamental aspects of typography are legibility, readability, and
+            aesthetics. Although in a non-technical sense “legible” and “readable”
+            are often used synonymously, typographically they are separate but
+            related concepts.""",
+            ),
+            rx.text(
+                """Legibility describes how easily individual characters can be
+            distinguished from one another. It is described by Walter Tracy as “the
+            quality of being decipherable and recognisable”. For instance, if a “b”
+            and an “h”, or a “3” and an “8”, are difficult to distinguish at small
+            sizes, this is a problem of legibility.""",
+            ),
+            rx.text(
+                """Typographers are concerned with legibility insofar as it is their job to
+            select the correct font to use. Brush Script is an example of a font
+            containing many characters that might be difficult to distinguish. The
+            selection of cases influences the legibility of typography because using
+            only uppercase letters (all-caps) reduces legibility.""",
+            ),
+            direction = "column",
+            spacing = "4",
+        ),
+        type = "always",
+        scrollbars = "vertical",
+    )
+
+def scroll_horizontal_area() -> rx.Component:
+    return rx.grid(
+        rx.scroll_area(
+            rx.flex(
+                rx.text("first treatment",  font_family="Rajdhani", weight = "bold"),
+                rx.text(
+                    """Legibility describes how easily individual characters can be
+            distinguished from one another. It is described by Walter Tracy as "the
+            quality of being decipherable and recognisable". For instance, if a "b"
+            and an "h", or a "3" and an "8", are difficult to distinguish at small
+            sizes, this is a problem of legibility.""",
+                    size = "2",
+                    trim = "both",
+                ),
+                padding = "8px",
+                direction = "column",
+                spacing = "4",
+            ),
+            type = "auto",
+            scrollbars = "vertical",
+            style = {"height": 200},
+        ),
+        rx.scroll_area(
+            rx.flex(
+                rx.text("second treatment",  font_family="Rajdhani", weight = "bold"),
+                rx.text(
+                    """Legibility describes how easily individual characters can be
+            distinguished from one another. It is described by Walter Tracy as "the
+            quality of being decipherable and recognisable". For instance, if a "b"
+            and an "h", or a "3" and an "8", are difficult to distinguish at small
+            sizes, this is a problem of legibility.""",
+                    size = "2",
+                    trim = "both",
+                ),
+                padding = "8px",
+                direction = "column",
+                spacing = "4",
+            ),
+            type = "always",
+            scrollbars = "vertical",
+            style = {"height": 200},
+        ),
+        rx.scroll_area(
+            rx.flex(
+                rx.text("third treatment",  font_family="Rajdhani", weight = "bold"),
+                rx.text(
+                    """Legibility describes how easily individual characters can be
+            distinguished from one another. It is described by Walter Tracy as "the
+            quality of being decipherable and recognisable". For instance, if a "b"
+            and an "h", or a "3" and an "8", are difficult to distinguish at small
+            sizes, this is a problem of legibility.""",
+                    size = "2",
+                    trim = "both",
+                ),
+                padding = "8px",
+                direction = "column",
+                spacing = "4",
+            ),
+            type = "scroll",
+            scrollbars = "vertical",
+            style = {"height": 200},
+        ),
+        rx.scroll_area(
+            rx.flex(
+                rx.text("fourth treatment",  font_family="Rajdhani", weight = "bold"),
+                rx.text(
+                    """Legibility describes how easily individual characters can be
+            distinguished from one another. It is described by Walter Tracy as "the
+            quality of being decipherable and recognisable". For instance, if a "b"
+            and an "h", or a "3" and an "8", are difficult to distinguish at small
+            sizes, this is a problem of legibility.""",
+                    size = "2",
+                    trim = "both",
+                ),
+                padding = "8px",
+                direction = "column",
+                spacing = "4",
+            ),
+            type = "hover",
+            scrollbars = "vertical",
+            style = {"height": 200},
+        ),
+        columns = "4",
+        spacing = "2",
+    )
 @rx.page(route="/results", title="Results Page")
 def about() -> rx.Component:
 
-    return(rx.flex(
-
-           rx.grid(
-               rx.foreach(
-                rx.Var.range(3),  # Assuming you want to display 3 cards
-                lambda i: rx.card(rx.recharts.bar_chart(
-                rx.recharts.bar(data_key="uv", stroke="#8884d8", fill="#8884d8"),
-                rx.recharts.x_axis(data_key="name"),
-                rx.recharts.y_axis(),
-                data=data,
-            ),
-                                   height="25vh"),
-
-            ),
-            rows="3",  # This specifies that you want 3 rows for your cards
-            flow="column",  # This sets the flow to column, aligning items vertically
-            justify="start",  # Aligns the grid to the start (left side) of its container
-            spacing="4",  # Sets spacing between cards
-            width="50%",  # Ensures the grid takes the full width of its container
-            ),
-
-
+    return (
+        rx.flex(rx.vstack(
             rx.hstack(
-                action_bar(),
-                rx.box(rx.image(src="/dino.png",
-                                width="300px",
-                                height="auto"),
-                                )
+            rx.card(scroll_area(), width="60%", height="400px"),
+                    rx.card(rx.heading('Recovery Time',  font_family="Rajdhani"), line_chart(), width="60%", height="400px"),
+                    rx.vstack(rx.card(rx.heading('Probability Metric',  font_family="Rajdhani"), pi_chart(), width="100%", height="300px"),
+                              rx.card(rx.heading('Most Likely Match:',  font_family="Rajdhani"), rx.text("Nosebleeds"), width="100%", height="100px"), width="40%"),
 
+                justify = "between",
+                align = "stretch",
+                spacing = "4",
+                width="100%"
+            ),
+            rx.hstack(
+                rx.card(rx.heading('Treatments', font_family="Rajdhani"), scroll_horizontal_area(), width="70%", height="200px"),
+                # action_bar(),
+                rx.box(rx.text('Does this look accurate?',
+                               color = 'white'),
+                       rx.vstack(
+                           rx.hstack(
+                               rx.button(
+                                   rx.icon(tag = "check"),
+
+                               ),
+                               rx.button(
+                                   rx.icon(tag = "x"),
+                               ),
+                               spacing = "2",
+                               justify = "end",
+                               align = "center"
+                           ),
+                       ),
+
+                       border_radius = "9px",
+                       width = "20%",
+                       margin = "4px",
+                       padding = "30px",
+                       align="end",
+                       background = "linear-gradient(45deg, var(--tomato-9), var(--plum-9))",
+
+                       ),
+                rx.box(rx.image(src = "/dino.png",
+                                width = "300px",
+                                height = "auto"),
+                       #align = "center",
+                       # width = "100%"
+                       style = style.dino_style
+                       ),
+
+                align = "stretch",
+                width = "100%"
             ),
 
 
-            bg="lightblue",
+            bg = "lightblue",
             width="100%",
             height="100vh",
             display="flex",
-            flex_direction="row",
+            direction = "column",
             align_items="center",
             justify_content="center",
-            padding="5%",
+            padding="8%",
             overflow="hidden"
-            )
-        )
+        ))
+
+    )
 
 
-
-app = rx.App()
+app = rx.App(
+stylesheets=[
+        "https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
+    ],
+)
 app.add_page(index)
 app.compile()
