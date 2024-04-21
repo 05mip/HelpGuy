@@ -44,7 +44,7 @@ class State(rx.State):
         self.treatments = []
         self.summary = ''
         self.pielist: list[dict]= []
-        
+
         if self.prompt == "":
             yield rx.window_alert("Prompt Empty")
         else:
@@ -77,6 +77,7 @@ class State(rx.State):
         in_causes = True
         lines = self.response.split('\n')
         dash_front = lines[0].strip().startswith('-')
+        dash_back = '-' in lines[0].strip()[-5:]
 
         for line in self.response.split('\n')[:-1]:
             if "stimate" in line:
@@ -84,8 +85,17 @@ class State(rx.State):
                 self.recov_time = line[line.index('-')+1:]
                 continue
             if in_causes:
-                prop = line.split('-')[-1]
-                cause = '-'.join(line.split('-')[int(dash_front):-1]).strip()
+                if dash_back:
+                    prop = line.split('-')[-1]
+                else:
+                    prop = line.strip().split()[-1]
+                if '.' in line.strip()[:3]:
+                    if dash_back:
+                        cause = line[3:line.index('-')]
+                    else:
+                        cause = line.split()[1:-1]
+                else:
+                    cause = '-'.join(line.split('-')[int(dash_front):-1]).strip()
                 self.causes_dict[cause] = prop
             else:
                 if len(line) < 3 or "ummary" in line:
@@ -234,7 +244,7 @@ def pi_chart() -> rx.Component:
             cy="50%",
             fill="#7A8FB8",
             label=True,
-    ),
+        ),
         rx.recharts.legend(),
         height ="90%",
         width="90%",
@@ -322,7 +332,8 @@ def about() -> rx.Component:
                                ),
                                rx.button(
                                    rx.icon(tag = "x"),
-                                   on_click = correctOutputState.set_need_to_check,
+                                #    on_click = correctOutputState.set_need_to_check,
+                                    on_click = rx.redirect("http://localhost:3000/"),
                                ),
                                spacing = "2",
                                justify = "end",
